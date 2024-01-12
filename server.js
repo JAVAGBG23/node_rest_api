@@ -9,8 +9,16 @@ require("dotenv").config();
 const app = express();
 
 // connect to database
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("DB connected"))
+  .catch((err) => console.log("DB connection error", err));
 
 // import routes
+const blogPostRoutes = require("./routes/blogPost");
 
 // middlewares
 if (process.env.NODE_ENV === "development") {
@@ -23,6 +31,12 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 // route middleware
+app.use("/api", blogPostRoutes);
+
+// test route
+app.get("/api/klarr/", (req, res) => {
+  res.send("Hello from KLARR :)");
+});
 
 // port
 const port = process.env.PORT || 8000;
