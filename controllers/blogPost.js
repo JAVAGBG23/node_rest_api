@@ -1,5 +1,22 @@
 const BlogPost = require("../models/blogPost");
 
+// PARAM
+exports.postById = (req, res, next, id) => {
+  BlogPost.findById(id).exec((err, post) => {
+    if (err || !post) {
+      return res.status(400).json({
+        message: "Post does not exist",
+      });
+    }
+    req.post = post;
+    next();
+  });
+};
+
+exports.read = (req, res) => {
+  return res.json(req.post);
+};
+
 exports.create = async (req, res) => {
   try {
     const blogPost = await new BlogPost({
@@ -20,29 +37,25 @@ exports.getAll = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  const blogPost = req.blogPost;
-  blogPost.title = req.body.title;
-  blogPost.content = req.body.content;
-  blogPost.save((err, data) => {
+  const post = req.post;
+  post.title = req.body.title;
+  post.content = req.body.content;
+  post.save((err, data) => {
     if (err) {
-      return res.status(400).json({ message: "Error updating blog post" });
+      return res.status(400).json({ message: "error" });
     }
     res.json(data);
   });
 };
 
-// PARAM
-exports.blogPostById = async (req, res) => {
-  BlogPost.findById(id).exec((err, data) => {
-    if (err || !data) {
-      return res.status(400).json({ message: "Error" });
+exports.remove = async (req, res) => {
+  const post = req.post;
+  post.remove((err, data) => {
+    if (err) {
+      return res.status(400).json({ message: "error" });
     }
-    req.data = data;
-    next();
+    res.json({
+      message: "Post deleted",
+    });
   });
-};
-
-//GET blogpost by specific id
-exports.read = async (req, res) => {
-  return res.json(req.blogPost);
 };
