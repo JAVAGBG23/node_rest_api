@@ -13,3 +13,8 @@ exports.create = async (req, res) => {
     return res.status(400).send("BlogPost creation failed");
   }
 };
+
+exports.getAll = async (req, res) => {
+  const allBlogPosts = await BlogPost.find({}).sort({ createdAt: 1 }).exec();
+  res.json(allBlogPosts);
+};
